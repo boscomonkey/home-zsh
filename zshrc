@@ -1,3 +1,5 @@
+#-*-shell-script-*-
+
 #
 # git completion
 #
@@ -14,6 +16,12 @@ fi
 # disable HUSKY git hooks by default - https://bobbyhadz.com/blog/git-commit-skip-hooks
 #
 export HUSKY=0
+
+
+#
+# case-sensitive sort
+#
+export LC_COLLATE=C
 
 
 #
@@ -37,7 +45,8 @@ export NVM_DIR="$HOME/.nvm"
 
 alias ll='ls -al'
 
-alias ack='ack --ignore-dir coverage --ignore-dir log --ignore-dir tmp --ignore-dir vendor'
+alias mcp-add-context7='claude mcp add context7 -- npx -y @upstash/context7-mcp'
+alias ack='ack --ignore-dir .idea --ignore-dir coverage --ignore-dir log --ignore-dir tmp --ignore-dir vendor'
 alias ackp="ack --pager='less -R'"
 alias bundate='bundle && rake db:migrate:with_data'
 alias cls='printf "\033[2J"'
@@ -46,14 +55,14 @@ alias curl_json='curl --header '\''Content-Type: application/json'\'' --request 
 alias decode64='ruby -rbase64 -e '\''print Base64.decode64(File.open(ARGV[0]){|f| f.read})'\'''
 alias dss='diff --side-by-side -W$(stty size | sed -r "s/^.* +//")'
 alias encode64='ruby -rbase64 -e '\''print Base64.encode64(File.open(ARGV[0]){|f| f.read})'\'''
-alias gardendev='aws-vault exec dev_hingepoweruser -- garden'
+alias envkaf='env | egrep '\''(KAFKA_|KUBE_|MSK_)'\'
 alias gshort='git rev-parse --short=7 HEAD'
 alias gshort_master='git rev-parse --short=7 master'
 # alias k9s='k9s --readonly -r 1'
 alias k9s='k9s -r 1'
-alias k9s_dev='av-dev k9s --namespace apps --context eks-dev'
-alias k9s_stage='av-stage k9s --namespace apps --context eks-stage'
-alias k9s_prod='av-prod k9s --namespace apps --context eks-prod'
+alias k9s-dev='av-dev k9s --namespace apps --context dev'
+alias k9s-stage='av-stage k9s --namespace apps --context stage'
+alias k9s-prod='av-prod k9s --namespace apps --context prod'
 alias mac2unix='perl -pe '\''s/\r/\n/mg'\'''
 alias nocomment='egrep -v '\''^#'\'
 alias noblank='egrep -v '\''^$'\'
@@ -62,6 +71,8 @@ alias pretty_json='ruby -r json -e '\''txt = ARGF.read; h = JSON.parse(txt); put
 alias psgrep='ps aux | grep -v grep | grep '
 alias python2_simple_http_server='python -m SimpleHTTPServer'
 alias python_http_server='python3 -m http.server'
+alias raw_json='ruby -rjson -e '\''puts JSON.parse(ARGF.read).to_json'\'
+alias rc="rubycritic -f json --churn-after $(date -I)"
 alias rspecc='rspec --profile 0 --format documentation'
 alias rube='echo DEPENDENCIES_NEXT=$DEPENDENCIES_NEXT RUBYOPT=$RUBYOPT'
 alias tabify='ruby -pe '\''gsub(/ +/, "\t")'\'''
@@ -75,18 +86,22 @@ alias dila='docker image list --all'
 # --rm auto remove container upon exit
 alias drrm='docker run --rm'
 
-# shorthands for docker compose
-alias dcomp='docker compose '
-alias docker-compose='docker compose '
+# shorthands for docker compose (brew install docker-compose)
+alias dcomp='docker-compose '
 
 # git aliases for submodules
 alias gal='git config --get-regexp alias\. | egrep --color '\''\.\w+\s+'\'
 alias gcl='git clone --recurse-submodules'
 alias gco='git checkout --recurse-submodules'
+alias gdm='git diff --merge-base main'
+alias gdm-no='git diff --merge-base main --name-only'
+alias gdmas='git diff --merge-base master'
+alias gdmas-no='git diff --merge-base master --name-only'
 alias gfe='git fetch --recurse-submodules'
 alias gpu='git pull --recurse-submodules'
 alias gst='git status'
 alias gsu='git submodule update --init --recursive'
+alias gwt='git worktree'
 
 # exec bash as root interactively for a docker container
 dexecbash ()
@@ -147,7 +162,7 @@ typeset -U path
 #
 
 # output of `pyenv env`
-if type brew && test -n "$(brew list pyenv)"; then
+if type brew &>/dev/null && test -n "$(brew list pyenv)"; then
     export PYENV_ROOT="$HOME/.pyenv"
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
@@ -166,12 +181,18 @@ fi
 ###	autoload -U promptinit; promptinit
 ###	prompt spaceship
 
-###	type brew && test -n "$(brew --prefix spaceship)" && source "$(brew --prefix spaceship)/spaceship.zsh"
+###	type brew &>/dev/null && test -n "$(brew --prefix spaceship)" && source "$(brew --prefix spaceship)/spaceship.zsh"
 
 #
 # testing zsh starship prompt (2024/06/06) - https://starship.rs/
 #
-type brew && test -n "brew --prefix starship" && eval "$(starship init zsh)"
+type brew &>/dev/null && test -n "brew --prefix starship" && eval "$(starship init zsh)"
+
+
+#
+# fastfetch (system info) & `onefetch --nerd-fonts` for git directory summary
+#
+###	fastfetch
 
 
 #
@@ -179,7 +200,7 @@ type brew && test -n "brew --prefix starship" && eval "$(starship init zsh)"
 #
 
 # fast book dual boot gem - "bootboot"
-export DEPENDENCIES_NEXT=1
+export DEPENDENCIES_NEXT=no_op
 
 # Ruby 3.0
 export RUBYOPT='-W:deprecated'
@@ -190,4 +211,9 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # remind me the latest dev env vars
 #	- installed by garden-modules' `make setup`
-echo DEPENDENCIES_NEXT=$DEPENDENCIES_NEXT RUBYOPT=$RUBYOPT
+echo -e "DEPENDENCIES_NEXT=$DEPENDENCIES_NEXT\nRUBYOPT=$RUBYOPT"
+
+# Temporarily using Homebrew's openjdk 11. Remember to unlink the following when uninstalling:
+#   sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+#
+export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
