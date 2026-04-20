@@ -213,7 +213,5 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 #	- installed by garden-modules' `make setup`
 echo -e "DEPENDENCIES_NEXT=$DEPENDENCIES_NEXT\nRUBYOPT=$RUBYOPT"
 
-# Temporarily using Homebrew's openjdk 11. Remember to unlink the following when uninstalling:
-#   sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
-#
-export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
+# Claude Code needs this
+export PATH="$HOME/.local/bin:$PATH"
