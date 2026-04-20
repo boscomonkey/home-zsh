@@ -1,6 +1,6 @@
 
 
-test -f /opt/homebrew/bin/brew && eval "$(/opt/homebrew/bin/brew shellenv)"
+test -f /opt/homebrew/bin/brew && eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 
 
 # Added by Toolbox App
